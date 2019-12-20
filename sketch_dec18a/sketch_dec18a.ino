@@ -6,24 +6,53 @@ SoftwareSerial SkySafari(10, 11);
 int altCount = 0;
 int azCount = 0;
 
+void DecChAISR()
+{
+  altCount++;
+}
+
+void DecChBISR()
+{
+  altCount++;
+}
+
+void AzChAISR()
+{
+  azCount++;  
+}
+
+void AzChBISR()
+{
+  azCount++;
+}
+
 
 void setup() 
 {
   // put your setup code here, to run once:
   SkySafari.begin(9600);
   Serial.begin(9600);
-  Serial.println("Cock");
+  Serial.println("Begin Simple DSC");
+
+  pinMode(2, INPUT);
+  pinMode(3, INPUT);
+
+  attachInterrupt(digitalPinToInterrupt(2), DecChBISR, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(3), DecChAISR, CHANGE); 
 }
 
 void loop() 
 {
   // put your main code here, to run repeatedly:
-  altCount++;
+//  altCount++;
   if(altCount >= 5000)
     altCount = -4999;
 
   int absAltCount = abs(altCount);
   int absAzCount = abs(azCount);
+  String printout(altCount);
+  printout.concat("\n");
+  Serial.print(printout);
 
   String response;
   int nBytes = 0;
@@ -63,7 +92,7 @@ void loop()
         response.concat('\r');
         
         
-        Serial.print(response + "\n");
+//        Serial.print(response + "\n");
         SkySafari.print(response);
 
         response = "";
